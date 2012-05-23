@@ -114,8 +114,7 @@ function handleStatusResponse(obj){
     var epic_key = "";
     var found_epic = false;
 
-    var items = [];
-    var itemNodes = domData.getElementsByTagName("item");
+   var itemNodes = domData.getElementsByTagName("item");
 
     status.total = itemNodes.length;
     for (var i = 0; i < itemNodes.length; i++) {
@@ -152,7 +151,7 @@ function handleStatusResponse(obj){
                     if (found_epic) {break;}
                     var customFieldNodes = childNode.childNodes;
                     for (var k=0; k < customFieldNodes.length;k++) {
-                        var customFieldNode = customFieldNodes.item(k)
+                        var customFieldNode = customFieldNodes.item(k);
                         if (!isElement(customFieldNode)) {continue;}
                         if (customFieldNode.getAttribute("id") == "customfield_10011") {
                             epic_key = customFieldNode.getElementsByTagName("label")[0].firstChild.nodeValue;
@@ -187,30 +186,28 @@ function handleStatusResponse(obj){
 }
 
 function calculateStatusPer(status) {
-    var factor = 0;
-    if (status.original == 0) {
-        if (status.total == 0) {
-            factor = 0;
-        } else {
-            factor = (status.closed / status.total);
-        }
-    } else {
-        factor = ((status.original - status.remaining) / status.original);
+    var factorHours = 0;
+    if (status.original != 0) {
+        factorHours = ((status.original - status.remaining) / status.original);
     }
-    return factor;
+    var factorStories = 0;
+    if (status.total != 0) {
+        factorStories = (status.closed / status.total);
+    }
+
+    return ((factorHours + factorStories) /2);
 }
 
 function calculateColor(status) {
+    var color = "#FFFF00";
     var factor = calculateStatusPer(status);
     if (factor > 0.5) {
-        return "#" + toHex(512-factor*512) + "FF00";
-    }
-    if (factor == 0.5) {
-        return "#FFFF00";
+        color = "#" + toHex(512-factor*512) + "FF00";
     }
     if (factor < 0.5) {
-        return "#FF" + toHex(factor*512) + "00";
+        color =  "#FF" + toHex(factor*512) + "00";
     }
+    return color;
 }
 
 function toHex(nr) {
