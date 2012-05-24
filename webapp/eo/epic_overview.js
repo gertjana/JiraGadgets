@@ -219,16 +219,13 @@ function toHex(nr) {
 }
 
 function renderJiraIssues(jiraIssues) {
-  var html =
-    "<div class='title'>" +
-    jiraIssues.title +
-    "</div>";
+  var html = "<div class='title'>" + jiraIssues.title + "</div>";
   for (var i = 0; i < jiraIssues.items.length; i++) {
     var item = jiraIssues.items[i];
     html +=
         "<div class='jira-container'>" +
             "<div class='jira-status' id='" + item.key + "-status'>" +
-            "   <div class='colorbox' title='no status for this Epic'>-</div>" +
+            "   <div class='colorbox' title='no stories to this Epic'>-</div>" +
             "</div>" +
             "<div class='jira-item'>" +
                 "<a target='_blank' href='" + item.link + "'>" + item.name + "</a>" +
