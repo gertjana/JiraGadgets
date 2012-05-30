@@ -9,13 +9,13 @@
     var project = prefs.getString("project");
     var version = prefs.getString("version");
 
-    var baseSearchRequest = "http://jira.global.sdl.corp:8080/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=";
+    var baseSearchRequest = "http://" + this.location.host + "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=";
     var JqlQuery = {
         Epic                : "%22Epic/Theme%22%3D{0}+AND+Type%3DStory",
         Epics               : "project%3D{0}+AND+Type%3DEpic",
         EpicsForVersion     : "project%3D{0}+AND+Type%3DEpic+AND+fixVersion=%22{1}%22"
     };
-
+    console.log(baseSearchRequest);
     gadgets.util.registerOnLoadHandler(fetchIssues);
 
     function fetchIssues() {
