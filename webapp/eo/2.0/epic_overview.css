@@ -11,18 +11,19 @@
 }
  
 .jira-container {
+    background-color: #DDDDDD;
     height:20px;
     width:100%;
     clear:left;
+    padding-left:5px;
 }
 
 .jira-item {
-    margin: 5px;
+    margin-left: 5px;
     float:left;
 }
 
 .jira-status {
-    margin: 5px;
     margin-bottom: 0px;
     float:left;
     font-size:x-small;
@@ -66,4 +67,25 @@
 
 .grey {
     color:#888;
+}
+
+.indent1 {
+    background-color : #EEEEEE;
+    padding-left: 10px;
+}
+.indent2 {
+    background-color : #EEEEEE;
+    padding-left: 20px;
+}
+.indent3 {
+    background-color : #EEEEEE;
+    padding-left: 30px;
+}
+.indent4 {
+    background-color : #EEEEEE;
+    padding-left: 40px;
+ }
+.indent5 {
+    background-color : #EEEEEE;
+    padding-left: 50px;
 }
