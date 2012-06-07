@@ -15,7 +15,6 @@
         Epics               : "project%3D{0}+AND+Type%3DEpic",
         EpicsForVersion     : "project%3D{0}+AND+Type%3DEpic+AND+fixVersion=%22{1}%22"
     };
-    console.log(baseSearchRequest);
     gadgets.util.registerOnLoadHandler(fetchIssues);
 
     function fetchIssues() {
@@ -272,7 +271,7 @@
 
             var statusHtml = "No information for this Epic";
             if (item.status) {
-                var statusHtml = item.status.open + "/" + item.status.closed + "/" + item.status.total + " Stories (Open/Closed/Total)  | " +
+                statusHtml = item.status.open + "/" + item.status.closed + "/" + item.status.total + " Stories (Open/Closed/Total)  | " +
                     item.status.openStorypoints + "/" + item.status.closedStorypoints + " SP (Open/Closed) | " +
                     (item.status.remaining/3600) + "h /" + (item.status.original/3600) + "h Hours (Remaining/Total)";
             }

@@ -20,7 +20,7 @@ function fetchIssues() {
         }
 
         var url = "http://jira.global.sdl.corp:8080/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=" + jqlQuery;
-
+        alert(url);
         var params = {};
         params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;
 
