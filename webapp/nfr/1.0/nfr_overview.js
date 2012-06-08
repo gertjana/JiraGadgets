@@ -9,11 +9,12 @@
     var nfrs = {};
 
     var baseSearchRequest = "http://" + this.location.host + "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=";
-
+    var baseIssueRequest  = "http://" + this.location.host + "/jira/secure/IssueNavigator.jspa?reset=true&jqlQuery=";
     var JqlQuery = {
         StoriesForAProject                : "Project%3D{0}+AND+issueType%3DStory+AND+Status!%3DClosed",
-        StoriesForAProjectAndVersion      : "Project%3D{0}+AND+issueType%3DStory+AND+Status!%3DClosed+AND+fixVersion%3D%22{1}%22"
-
+        StoriesForAProjectAndVersion      : "Project%3D{0}+AND+issueType%3DStory+AND+Status!%3DClosed+AND+fixVersion%3D%22{1}%22",
+        QueryNFRForAProject               : "Project+%3D+{0}+and+NFR+%3D+%22{1}%22",
+        QueryNFRForAProjectAndVersion     : "Project+%3D+{0}+and+fixVersion%3D%22{1}%22+and+NFR+%3D+%22{2}%22"
     };
 
     gadgets.util.registerOnLoadHandler(fetchIssues);
@@ -80,11 +81,19 @@
         }
     }
     function renderNfrs() {
-        var size =  (nfrs[nfr] > 7) ? 7 : nfrs[nfr];
+
         var html = "<div class='title'><span class='grey'>Open NFR's for Project:</span> {0} <span class='grey'>and Version:</span> {1}</div>".format(project, (version ? version : "None"));
         html += "<div class='container'>";
         for (nfr in nfrs) {
-           html += "    <div class='nfr size_{0}'>{1} ({0})</div>".format(nfrs[nfr], nfr);
+        var size =  (nfrs[nfr] > 7) ? 7 : nfrs[nfr];
+        var link;
+        if (version) {
+            link = baseIssueRequest+JqlQuery.QueryNFRForAProjectAndVersion.format(project, version, nfr);
+        } else {
+            link = baseIssueRequest+JqlQuery.QueryNFRForAProject.format(project, nfr);
+        }
+        var text = "{1} ({0})".format(nfrs[nfr], nfr);
+        html += "    <div class='nfr size_{0}'><a target='_blank' href='{1}'>{2}</a></div>".format(size, link, text);
         }
 
         html += "</div><br/>";
