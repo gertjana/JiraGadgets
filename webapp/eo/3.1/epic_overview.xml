@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+    <ModulePrefs title="Epic Overview 3.1" author="SDL WCMS" author_email="gassies@sdl.com" directory_title="Epic Overview 3.1" description="Overview and progress on Epics">
+        <Require feature="minimessage" />
+        <Require feature="dynamic-height" />
+    </ModulePrefs>
+    <UserPref name="project" display_name="Project Key" required="true" />
+    <UserPref name="version" display_name="Version (Optional)"/>
+    <Content type="html">
+        <![CDATA[
+            <link rel="stylesheet" href="http://gadgets.major7.cloudbees.net/eo/3.1/epic_overview.css">
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jquery-1.7.2.js"></script>
+            <div id="content_div"></div>
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/eo/3.1/epic_overview.js"></script>
+        ]]>
+    </Content>
+</Module>
