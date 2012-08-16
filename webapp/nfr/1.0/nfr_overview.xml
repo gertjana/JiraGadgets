@@ -9,6 +9,7 @@
     <Content type="html">
         <![CDATA[
             <link rel="stylesheet" href="http://gadgets.major7.cloudbees.net/nfr/1.0/nfr_overview.css">
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jit.js"></script>
             <div id="content_div"></div>
             <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/nfr/1.0/nfr_overview.js"></script>
         ]]>
