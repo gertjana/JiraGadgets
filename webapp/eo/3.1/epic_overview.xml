@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
-    <ModulePrefs title="Epic Overview 3.1" author="SDL WCMS" author_email="gassies@sdl.com" directory_title="Epic Overview 3.1" description="Overview and progress on Epics">
+    <ModulePrefs title="Epic Overview 3.1" author="SDL WCMS" author_email="gassies@sdl.com" directory_title="Epic Overview 3.1" description="Overview and progress on Epics"
+                 thumbnail="http://gadgets.major7.cloudbees.net/eo/thumbnail.png" screenshot="http://gadgets.major7.cloudbees.net/eo/screenshot.png">
         <Require feature="minimessage" />
         <Require feature="dynamic-height" />
     </ModulePrefs>

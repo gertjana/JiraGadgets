@@ -302,7 +302,6 @@
             }
             var colorBoxHtml;
 
-            if (console && item.status) {console.log(key + " - " + item.status.total);}
             if (!item.status || item.status.total == 0) {
                 colorBoxHtml = "<div title='no stories for this epic' class='colorbox alert'></div>";
             } else {
