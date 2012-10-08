@@ -1,4 +1,4 @@
-(function() {
+(function($) {
 
     var msg = new gadgets.MiniMessage();
     var loadMessage = msg.createStaticMessage("loading...");
@@ -18,79 +18,6 @@
         QueryNFRForAProjectAndVersion     : "Project+%3D+{0}+and+fixVersion%3D%22{1}%22+and+NFR+%3D+%22{2}%22"
     };
 
-    var labelType, useGradients, nativeTextSupport, animate;
-
-    (function() {
-        var ua = navigator.userAgent,
-            iStuff = ua.match(/iPhone/i) || ua.match(/iPad/i),
-            typeOfCanvas = typeof HTMLCanvasElement,
-            nativeCanvasSupport = (typeOfCanvas == 'object' || typeOfCanvas == 'function'),
-            textSupport = nativeCanvasSupport
-                && (typeof document.createElement('canvas').getContext('2d').fillText == 'function');
-        //I'm setting this based on the fact that ExCanvas provides text support for IE
-        //and that as of today iPhone/iPad current text support is lame
-        labelType = (!nativeCanvasSupport || (textSupport && !iStuff))? 'Native' : 'HTML';
-        nativeTextSupport = labelType == 'Native';
-        useGradients = nativeCanvasSupport;
-        animate = !(iStuff || !nativeCanvasSupport);
-    })();
-
-    var tm = new $jit.TM.Squarified({
-        //where to inject the visualization
-        injectInto: 'content_div',
-        //parent box title heights
-        titleHeight: 15,
-        //enable animations
-        animate: animate,
-        //box offsets
-        offset: 1,
-        //Attach left and right click events
-        Events: {
-            enable: true,
-            onClick: function(node) {
-                if(node) tm.enter(node);
-            },
-            onRightClick: function() {
-                tm.out();
-            }
-        },
-        duration: 1000,
-        //Enable tips
-        Tips: {
-            enable: true,
-            //add positioning offsets
-            offsetX: 20,
-            offsetY: 20,
-            //implement the onShow method to
-            //add content to the tooltip when a node
-            //is hovered
-            onShow: function(tip, node, isLeaf, domElement) {
-                var html = "<div class=\"tip-title\">" + node.name
-                    + "</div><div class=\"tip-text\">";
-                var data = node.data;
-                if(data.count) {
-                    html += data.count;
-                }
-                tip.innerHTML =  html;
-            }
-        },
-        //Add the name of the node in the correponding label
-        //This method is called once, on label creation.
-        onCreateLabel: function(domElement, node){
-            domElement.innerHTML = node.name;
-            var style = domElement.style;
-            style.display = '';
-            style.border = '1px solid transparent';
-            domElement.onmouseover = function() {
-                style.border = '1px solid #9FD4FF';
-            };
-            domElement.onmouseout = function() {
-                style.border = '1px solid transparent';
-            };
-        }
-    });
-
-
     var childNodeTemplate = '{"children": [],"data": {"count": "{1}", "link": "{2}"},"id": "{0}","name": "{0}"}';
     var jsonNodeTemplate = '{"children": [{0}], "data": {}, "id": "root", "name": "NFRs"}';
 
@@ -103,6 +30,8 @@
             msg.dismissMessage(loadMessage);
             gadgets.window.adjustHeight();
         }  else {
+            gadgets.window.setTitle("NFR Overview - Project:{0} Version:{1}".format(project, version));
+
             var jqlQuery = JqlQuery.StoriesForAProject.format(encodeURIComponent(project));
             if (version) {
                 jqlQuery = JqlQuery.StoriesForAProjectAndVersion.format(encodeURIComponent(project), encodeURIComponent(version));
@@ -121,6 +50,9 @@
 
         getNfrs(domData);
         renderNfrs();
+
+        $('div.container').freetile();
+        gadgets.window.adjustHeight();
     }
 
     function getNfrs(domData) {
@@ -157,10 +89,11 @@
             }
         }
     }
+
     function renderNfrs() {
         var children = "";
-//        var html = "<div class='title'><span class='grey'>Open NFR's for Project:</span> {0} <span class='grey'>and Version:</span> {1}</div>".format(project, (version ? version : "None"));
-//        html += "<div class='container'>";
+        var html = "<div class='title'><span class='grey'>Open NFR's for Project:</span> {0} <span class='grey'>and Version:</span> {1}</div>".format(project, (version ? version : "None"));
+        html += "<div class='container'>";
         for (nfr in nfrs) {
             var size =  (nfrs[nfr] > 7) ? 7 : nfrs[nfr];
             var link;
@@ -170,19 +103,17 @@
                 link = baseIssueRequest+JqlQuery.QueryNFRForAProject.format(project, nfr);
             }
             children = children + childNodeTemplate.format(nfr, size, '');
-//            var text = "{1} ({0})".format(nfrs[nfr], nfr);
-//            html += "    <div class='nfr size_{0}'><a target='_blank' href='{1}'>{2}</a></div>".format(size, link, text);
+            var text = "{1} ({0})".format(nfrs[nfr], nfr);
+            html += "    <div class='nfr size_{0}'><a target='_blank' href='{1}'>{2}</a></div>".format(size, link, text);
         }
 
         children = children.substr(0, children.length-1);
-        //var json = jsonNodeTemplate.format(children);
-        var json = '{"children": [], "data": {}, "id": "root", "name": "NFRs"}';
-        tm.loadJSON(json);
-        tm.refresh();
+        var json = jsonNodeTemplate.format(children);
 
-//        html += "</div><br/>";
 
-//        document.getElementById('content_div').innerHTML = html;
+        html += "</div><br/>";
+
+        document.getElementById('content_div').innerHTML = html;
         msg.dismissMessage(loadMessage);
         gadgets.window.adjustHeight();
     }
@@ -199,4 +130,4 @@
     function log(text) {
         if (console){console.log(text);}
     }
-})();
+})(jQuery);

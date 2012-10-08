@@ -1,7 +1,6 @@
 #content_div {
  font-size: 80%;
  background-color: #FFF;
- float:left;
 }
 .title {
     background-color: #E8EEF7;
@@ -9,7 +8,6 @@
     margin: 0;
     padding: 10px;
     width:100%;
-    float:left;
 }
 .grey {
     color:#888;
@@ -18,12 +16,10 @@
 .container {
     padding-bottom : 10px;
     width:100%;
-    float:left;
     text-align: center;
 }
 .nfr {
     background-color: #75a2ff;
-    float:left;
     padding:2px 10px 2px 10px;
     margin:2px;
     -moz-border-radius: 5px;

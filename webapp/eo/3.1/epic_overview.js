@@ -26,6 +26,7 @@
             msg.dismissMessage(loadMessage);
             gadgets.window.adjustHeight();
         }  else {
+            gadgets.window.setTitle("Epic Overview - {0} {1}".format(project, version));
             var jqlQuery = JqlQuery.Epics.format(encodeURIComponent(project));
             if (version) {
                 jqlQuery = JqlQuery.EpicsForVersion.format(encodeURIComponent(project), encodeURIComponent(version));

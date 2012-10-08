@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Module>
     <ModulePrefs title="Epic Overview 3.0" author="Gertjan Assies" author_email="gertjan.assies@gmail.com" directory_title="Epic Overview 3.0" description="Overview and progress on Epics">
+        <Optional feature="gadget-directory">
+            <Param name="categories">SDL CMT</Param>
+        </Optional>
         <Require feature="minimessage" />
         <Require feature="dynamic-height" />
+        <Require feature="views"/>
+        <Require feature="settitle"/>
     </ModulePrefs>
     <UserPref name="project" display_name="Project Key" required="true" />
     <UserPref name="version" display_name="Version (Optional)"/>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+    <ModulePrefs title="Hierarchical Overview 1.0" author="Gertjan Assies" author_email="gertjan.assies@gmail.com" directory_title="Hierarchical Overview 1.0" description="Hierarchical view of Epics, Stories, SubTasks and links">
+        <Optional feature="gadget-directory">
+            <Param name="categories">SDL CMT</Param>
+        </Optional>
+        <Require feature="minimessage" />
+        <Require feature="dynamic-height" />
+        <Require feature="views"/>
+        <Require feature="settitle"/>
+    </ModulePrefs>
+    <Locale>
+        <messagebundle>
+            <msg name="field.required">Required</msg>
+        </messagebundle>
+    </Locale>
+    <UserPref name="project" display_name="Project Key" required="true" />
+    <UserPref name="version" display_name="Version (Optional)"/>
+    <UserPref name="showSubTasks" display_name="Show Subtasks?" datatype="bool" default_value="true" />
+    <Content type="html" view="profile,canvas,home">
+        <![CDATA[
+            <link rel="stylesheet" href="http://gadgets.major7.cloudbees.net/tree/1.0/tree_overview.css">
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jquery-1.7.2.js"></script>
+            <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+            <div id="content_div"></div>
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/tree/1.0/tree_overview.js"></script>
+        ]]>
+    </Content>
+</Module>

@@ -2,8 +2,13 @@
 <Module>
     <ModulePrefs title="Epic Overview 3.1" author="SDL WCMS" author_email="gassies@sdl.com" directory_title="Epic Overview 3.1" description="Overview and progress on Epics"
                  thumbnail="http://gadgets.major7.cloudbees.net/eo/thumbnail.png" screenshot="http://gadgets.major7.cloudbees.net/eo/screenshot.png">
+        <Optional feature="gadget-directory">
+            <Param name="categories">SDL CMT</Param>
+        </Optional>
         <Require feature="minimessage" />
         <Require feature="dynamic-height" />
+        <Require feature="views"/>
+        <Require feature="settitle"/>
     </ModulePrefs>
     <UserPref name="project" display_name="Project Key" required="true" />
     <UserPref name="version" display_name="Version (Optional)"/>
