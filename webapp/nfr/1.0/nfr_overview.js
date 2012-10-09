@@ -30,7 +30,7 @@
             msg.dismissMessage(loadMessage);
             gadgets.window.adjustHeight();
         }  else {
-            gadgets.window.setTitle("NFR Overview - Project:{0} Version:{1}".format(project, version));
+            gadgets.window.setTitle("NFR Overview - Project: {0} Version: {1}".format(project, version));
 
             var jqlQuery = JqlQuery.StoriesForAProject.format(encodeURIComponent(project));
             if (version) {
@@ -92,8 +92,8 @@
 
     function renderNfrs() {
         var children = "";
-        var html = "<div class='title'><span class='grey'>Open NFR's for Project:</span> {0} <span class='grey'>and Version:</span> {1}</div>".format(project, (version ? version : "None"));
-        html += "<div class='container'>";
+        //var html = "<div class='title'><span class='grey'>Open NFR's for Project:</span> {0} <span class='grey'>and Version:</span> {1}</div>".format(project, (version ? version : "None"));
+        html = "<div class='container'>";
         for (nfr in nfrs) {
             var size =  (nfrs[nfr] > 7) ? 7 : nfrs[nfr];
             var link;

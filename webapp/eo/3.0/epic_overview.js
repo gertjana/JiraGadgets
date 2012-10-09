@@ -26,7 +26,7 @@
             msg.dismissMessage(loadMessage);
             gadgets.window.adjustHeight();
         }  else {
-            gadgets.window.setTitle("Epic Overview - Project:{0} Version:{1}".format(project, version));
+            gadgets.window.setTitle("Epic Overview - Project: {0} Version: {1}".format(project, version));
 
             var jqlQuery = JqlQuery.Epics.format(encodeURIComponent(project));
             if (version) {
@@ -324,7 +324,9 @@
     }
 
     function renderEpics() {
-      var html = "<div class='title'><span class='grey'>Status on Epics for Project:</span> {0} <span class='grey'>and Version:</span> {1}</div>".format(project, (version ? version : "None"));
+      //var html = "<div class='title'><span class='grey'>Status on Epics for Project:</span> {0} <span class='grey'>and Version:</span> {1}</div>".format(project, (version ? version : "None"));
+      var html="";
+
       var epics = epicsModel.getAll();
       var cnt = 0;
       for (var key in epics) {

@@ -90,6 +90,10 @@
     margin-top:2px;
 }
 
+.jira-container {
+    padding-top : 2px;
+}
+
 .bold {
     font-weight: bold;
 }
