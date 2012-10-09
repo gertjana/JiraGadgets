@@ -57,9 +57,7 @@
     var nodesToUpdate = [];
 
     var w = gadgets.window.getViewportDimensions().width,
-        h = gadgets.window.getViewportDimensions().height
-
-    log("DIM[{0},{1}]".format(w,h));
+        h = parseInt(gadgets.window.getViewportDimensions().width *.66);
 
     var vis = d3.select("#content_div").append("svg:svg")
         .attr("width", w)
@@ -69,13 +67,14 @@
     gadgets.util.registerOnLoadHandler(fetchIssues);
 
     function fetchIssues() {
+        $('#content_div').css("height",h);
         gadgets.window.adjustHeight();
         if (!project) {
             document.getElementById('content_div').innerHTML = "Please configure project and optionally version";
             msg.dismissMessage(loadMessage);
             gadgets.window.adjustHeight();
         }  else {
-            gadgets.window.setTitle("Hierarchical View - Project:{0} Version:{1}".format(project, version));
+            gadgets.window.setTitle("Hierarchical View - Project: {0} Version: {1}".format(project, version));
             var jqlQuery = JqlQuery.StoriesForAProject.format(encodeURIComponent(project));
             if (version) {
                 jqlQuery = JqlQuery.StoriesForAProjectAndVersion.format(encodeURIComponent(project), encodeURIComponent(version));
@@ -115,11 +114,15 @@
                         break;
                     case "customfields":
                         var customFieldNodes = childNode.childNodes;
+                        item.epic = [];
                         for (var k=0; k < customFieldNodes.length;k++) {
                             var customFieldNode = customFieldNodes.item(k);
                             if (!isElement(customFieldNode)) {continue;}
                             if (customFieldNode.getAttribute("id") == "customfield_10011") { // CustomField Epic/Theme
-                                item.epic = customFieldNode.getElementsByTagName("label")[0].firstChild.nodeValue;
+                                var labels = customFieldNode.getElementsByTagName("label");
+                                for (var l=0;l<labels.length;l++) {
+                                    item.epic.push(labels[l].firstChild.nodeValue);
+                                }
                             }
                             if (customFieldNode.getAttribute("id") == "customfield_10013") { // Storypoints
                                 item.storypoints = customFieldNode.getElementsByTagName("customfieldvalue")[0].firstChild.nodeValue;
@@ -137,8 +140,8 @@
                             issueLink.link = issueLinkNode.getElementsByTagName("issuekey")[0].firstChild.nodeValue;
                             issueLink.cause = issueLinkNode.getElementsByTagName("name")[0].firstChild.nodeValue;
                             issueLinks.push(issueLink);
-                            item.links = issueLink;
                         }
+                        item.links = issueLinks;
                         break;
                     case "subtasks":
                         if (showSubTasks) {
@@ -163,7 +166,7 @@
 
             if (item.type=="Epic") {
                 var epic = {"name": item.key, "color": TypeColors.Epic, "size":"10", "title":item.name};
-                if (isInArray(epic, data.nodes)==-1) {
+                if (isInArray(epic.name, data.nodes)==-1) {
                     data.nodes.push(epic);
                 }
             }  else {
@@ -172,16 +175,19 @@
 
             var itemId = data.nodes.length-1;
             if (item.epic) {
-                var epicId;
-                if (isInArray(item.epic, data.nodes)==-1) {
-                    var epicNode = {name: item.epic, color: TypeColors.Epic, "size":"10", "title":item.epic };
-                    data.nodes.push(epicNode);
-                    epicId = data.nodes.length-1;
-                    nodesToUpdate.push(epicNode);
-                } else {
-                    epicId = isInArray(item.epic, data.nodes);
+                for (var m=0;m<item.epic.length;m++) {
+                    var epic = item.epic[m];
+                    var epicId;
+                    if (isInArray(epic, data.nodes)==-1) {
+                        var epicNode = {name: epic, color: TypeColors.Epic, "size":"10", "title":item.epic };
+                        data.nodes.push(epicNode);
+                        epicId = data.nodes.length-1;
+                        nodesToUpdate.push(epicNode);
+                    } else {
+                        epicId = isInArray(epic, data.nodes);
+                    }
+                    data.links.push({"source":itemId, "target":epicId, "value":"3"});
                 }
-                data.links.push({"source":itemId, "target":epicId, "value":"3"});
             }
             if (item.subtasks) {
                 for(i=0;i<item.subtasks.length;i++) {
@@ -194,15 +200,15 @@
             }
             if (item.links) {
                 for(i=0;i<item.links.length;i++) {
-                    var link = items.links[i];
+                    var link = item.links[i];
                     var linkId;
-                    if (isInArray("{0}({1})".format(link.link, link.cause), data.nodes)==-1) {
-                        data.nodes.push({"name":"{0}({1})".format(link.link, link.cause), "color":TypeColors.Link, "size":"20", "title":"{0}({1})".format(link.link, link.cause)});
+                    if (isInArray(link.link, data.nodes)==-1) {
+                        data.nodes.push({"name":link.link, "color":TypeColors.Link, "size":"10", "title":"{0} {1} {2}".format(link.link, link.cause, item.key)});
                         linkId = data.nodes.length-1;
                     } else {
-                        linkId = isInArray("{0}({1})".format(link.link, link.cause), data.nodes)
+                        linkId = isInArray(link.link, data.nodes);
                     }
-                    data.links.push({"source":itemId, "target":linkId, "value":"1"});
+                    data.links.push({"source":itemId, "target":linkId, "value":"4", "cause":link.cause});
                 }
             }
         }

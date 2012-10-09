@@ -22,6 +22,17 @@
             <link rel="stylesheet" href="http://gadgets.major7.cloudbees.net/tree/1.0/tree_overview.css">
             <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jquery-1.7.2.js"></script>
             <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+            <div id="header">
+                <table>
+                    <tr>
+                        <td>Legend: </td>
+                        <td style="background-color:#1f77b4;color:black;">Epic</td>
+                        <td style="background-color:#2ca02c;color:black;">Story</td>
+                        <td style="background-color:#c49c94;color:black;">Subtask</td>
+                        <td style="background-color:#ff7f0e;color:black;">Linked Issue</td>
+                    </tr>
+                </table>
+            </div>
             <div id="content_div"></div>
             <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/tree/1.0/tree_overview.js"></script>
         ]]>

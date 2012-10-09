@@ -13,3 +13,14 @@ line.link {
     stroke: #9ecae1;
     stroke-width: 1.5px;
 }
+
+#header {
+    float:right;
+    border:1px solid black;
+}
+
+#header td {
+    padding: 4px;
+    font-size: 0.6em;
+    font-weight: bold;
+}
