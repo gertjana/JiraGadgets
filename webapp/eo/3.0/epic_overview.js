@@ -19,6 +19,10 @@
 
     gadgets.util.registerOnLoadHandler(fetchIssues);
 
+    function log(text) {
+        if (console){console.log(text);}
+    }
+
     function fetchIssues() {
         gadgets.window.adjustHeight();
         if (!project) {
@@ -115,127 +119,134 @@
         var url = baseSearchRequest + JqlQuery.Epic.format(key);
         var params = {};
         params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;
+        log(url);
+        gadgets.io.makeRequest(url, function(obj){
+                var domData = obj.data;
+                var status = {
+                    original :0,
+                    remaining :0,
+                    open:0,
+                    closed:0,
+                    total:0,
+                    openStorypoints:0,
+                    closedStorypoints:0
+                };
 
-        gadgets.io.makeRequest(url, handleStatusResponse, params);
+                var itemNodes = domData.getElementsByTagName("item");
+
+                status.total = itemNodes.length;
+                for (var i = 0; i < itemNodes.length; i++) {
+                    var childNodes = itemNodes.item(i).childNodes;
+                    var item= {
+                        original:0,
+                        remaining:0,
+                        storypoints:0
+                    };
+                    for (var j = 0; j < childNodes.length ; j++) {
+
+                        var childNode = childNodes.item(j);
+                        if (!isElement(childNode) || !childNode.firstChild) {
+                            continue;
+                        }
+                        switch (childNode.nodeName) {
+                            case "key":
+                                item.key = childNode.firstChild.nodeValue;
+                                break;
+                            case "link":
+                                item.link = childNode.firstChild.nodeValue;
+                                break;
+                            case "summary":
+                                item.name = childNode.firstChild.nodeValue;
+                                break;
+                            case "aggregatetimeoriginalestimate":
+                                if (!isNaN(childNode.getAttribute("seconds"))) {
+                                    item.original = parseInt(childNode.getAttribute("seconds"));
+                                }
+
+                                break;
+                            case "aggregatetimeremainingestimate":
+                                if (!isNaN(childNode.getAttribute("seconds"))) {
+                                    item.remaining = parseInt(childNode.getAttribute("seconds"));
+                                }
+                                break;
+                            case "status":
+                                item.status = childNode.firstChild.nodeValue;
+                                break;
+                            case "customfields":
+                                var customFieldNodes = childNode.childNodes;
+                                for (var k=0; k < customFieldNodes.length;k++) {
+                                    var customFieldNode = customFieldNodes.item(k)
+                                    if (!isElement(customFieldNode)) {continue;}
+                                    /*if (customFieldNode.getAttribute("id") == "customfield_10011") {
+                                        var labels = customFieldNode.getElementsByTagName("label");
+                                        for (var l=0;l<labels.length;l++) {
+                                            epic_keys.push(label);
+                                        }
+                                    } */
+                                    if (customFieldNode.getAttribute("id") == "customfield_10013") {
+                                        var sp = customFieldNode.getElementsByTagName("customfieldvalue")[0].firstChild.nodeValue;
+                                        item.storypoints = !isNaN(sp) ? parseFloat(sp) : 0;
+                                    }
+                                }
+                                break;
+                        }
+
+
+                    }
+
+
+
+                    status.original += item.original;
+                    status.remaining += item.remaining;
+
+                    if (item.status != "Closed") {
+                        status.open += 1;
+                        status.openStorypoints += item.storypoints;
+                    } else {
+                        status.closed += 1;
+                        status.closedStorypoints += item.storypoints;
+                    }
+
+
+                    storyModel.create(item.key, key, item.name, item.link, item.status, item.storypoints);
+
+                    if (epicsModel.get(key)) {
+                        var epic = epicsModel.epics[key];
+                        epic.status = status;
+                        epic.factor = calculateStatusPer(status);
+                        epic.stories = storyModel.getStoriesForEpic(key);
+                        epicsModel.epics[key] = epic;
+
+                    }
+
+                }
+
+
+                var statusHtml = status.open + "/" + status.closed + "/" + status.total + " Stories (Open/Closed/Total)|" + status.openStorypoints + "/" + status.closedStorypoints + " SP (Open/Closed) | " + (status.remaining/3600) + "h /" + (status.original/3600) + "h Hours (Remaining/Total)";
+
+                var factor =  calculateStatusPer(status);
+
+                var colorBoxHtml = "<div title='"+ statusHtml +"' class='colorbox' style='background-color:" + calculateColor(factor)+";'>" + Math.round(factor*100) + "%</div>";
+
+                if (document.getElementById(key + "-status"))     {
+                    document.getElementById(key + "-status").innerHTML = colorBoxHtml;
+                }
+
+                if (epicsModel.get(key)) {
+                    var storyHtml = getStoriesHtmlForEpic(epicsModel.get(key));
+
+                    if (document.getElementById(key + "-stories")) {
+                        document.getElementById(key + "-stories").innerHTML = storyHtml;
+                    }
+                }
+
+                msg.dismissMessage(loadMessage);
+                gadgets.window.adjustHeight();
+            }
+            , params);
     }
 
-    function handleStatusResponse(obj){
-        var domData = obj.data;
-        var status = {
-            original :0,
-            remaining :0,
-            open:0,
-            closed:0,
-            total:0,
-            openStorypoints:0,
-            closedStorypoints:0
-        };
-        var epic_key = "";
 
-        var itemNodes = domData.getElementsByTagName("item");
-
-        status.total = itemNodes.length;
-        for (var i = 0; i < itemNodes.length; i++) {
-            var childNodes = itemNodes.item(i).childNodes;
-            var item= {
-                original:0,
-                remaining:0,
-                storypoints:0
-            };
-            for (var j = 0; j < childNodes.length ; j++) {
-
-                var childNode = childNodes.item(j);
-                if (!isElement(childNode) || !childNode.firstChild) {
-                    continue;
-                }
-                switch (childNode.nodeName) {
-                    case "key":
-                        item.key = childNode.firstChild.nodeValue;
-                        break;
-                    case "link":
-                        item.link = childNode.firstChild.nodeValue;
-                        break;
-                    case "summary":
-                        item.name = childNode.firstChild.nodeValue;
-                        break;
-                    case "aggregatetimeoriginalestimate":
-                        if (!isNaN(childNode.getAttribute("seconds"))) {
-                            item.original = parseInt(childNode.getAttribute("seconds"));
-                        }
-
-                        break;
-                    case "aggregatetimeremainingestimate":
-                        if (!isNaN(childNode.getAttribute("seconds"))) {
-                            item.remaining = parseInt(childNode.getAttribute("seconds"));
-                        }
-                        break;
-                    case "status":
-                        item.status = childNode.firstChild.nodeValue;
-                        break;
-                    case "customfields":
-                        var customFieldNodes = childNode.childNodes;
-                        for (var k=0; k < customFieldNodes.length;k++) {
-                            var customFieldNode = customFieldNodes.item(k)
-                            if (!isElement(customFieldNode)) {continue;}
-                            if (customFieldNode.getAttribute("id") == "customfield_10011") {
-                                epic_key = customFieldNode.getElementsByTagName("label")[0].firstChild.nodeValue;
-                            }
-                            if (customFieldNode.getAttribute("id") == "customfield_10013") {
-                                var sp = customFieldNode.getElementsByTagName("customfieldvalue")[0].firstChild.nodeValue;
-                                item.storypoints = !isNaN(sp) ? parseFloat(sp) : 0;
-                            }
-                        }
-                        break;
-                }
-
-
-            }
-
-
-
-            status.original += item.original;
-            status.remaining += item.remaining;
-
-            if (item.status != "Closed") {
-                status.open += 1;
-                status.openStorypoints += item.storypoints;
-            } else {
-                status.closed += 1;
-                status.closedStorypoints += item.storypoints;
-            }
-            storyModel.create(item.key, epic_key, item.name, item.link, item.status, item.storypoints);
-
-        }
-        if (epicsModel.get(epic_key)) {
-            var epic = epicsModel.epics[epic_key];
-            epic.status = status;
-            epic.factor = calculateStatusPer(status);
-            epic.stories = storyModel.getStoriesForEpic(epic_key);
-            epicsModel.epics[epic_key] = epic;
-
-        }
-
-        var statusHtml = status.open + "/" + status.closed + "/" + status.total + " Stories (Open/Closed/Total)|" + status.openStorypoints + "/" + status.closedStorypoints + " SP (Open/Closed) | " + (status.remaining/3600) + "h /" + (status.original/3600) + "h Hours (Remaining/Total)";
-
-        var factor =  calculateStatusPer(status);
-
-        var colorBoxHtml = "<div title='"+ statusHtml +"' class='colorbox' style='background-color:" + calculateColor(factor)+";'>" + Math.round(factor*100) + "%</div>";
-
-        if (document.getElementById(epic_key + "-status"))     {
-            document.getElementById(epic_key + "-status").innerHTML = colorBoxHtml;
-        }
-
-        if (epicsModel.get(epic_key)) {
-            var storyHtml = getStoriesHtmlForEpic(epicsModel.get(epic_key));
-
-            if (document.getElementById(epic_key + "-stories")) {
-                document.getElementById(epic_key + "-stories").innerHTML = storyHtml;
-            }
-        }
-
-        msg.dismissMessage(loadMessage);
-        gadgets.window.adjustHeight();
-    }
 
     function calculateStatusPer(status) {
         var factorHours = 0;
@@ -360,7 +371,7 @@
             var formatclass = (story.status == 'Closed') ? "striked" : "";
             var alertclass = (story.storyPoints == 0) ? "alert" : "";
 
-            html += "<div class='story {0} {1}'><a target='_blank' href='{2}'>[{3}] {4}</a> ({5} Story Points)</div>"
+            html += "<div class='story {0} {1}'><a target='_blank' href='{2}'>[{3}] {4}</a> ({5} SP)</div>"
                 .format(formatclass, alertclass, story.link, story.key, story.name, story.storyPoints);
         }
         return html;
