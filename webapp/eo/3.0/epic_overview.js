@@ -41,22 +41,28 @@
             var params = {};
             params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;
 
+            log(url);
             gadgets.io.makeRequest(url, handleResponse, params);
         }
     }
 
-    function handleResponse(obj) {
-        var domData = obj.data;
+        function handleResponse(obj) {
 
-        getEpics(domData);
+         if (obj.rc > 399) {
+             document.getElementById('content_div').innerHTML = obj.text;
+         } else {
+             var domData = obj.data;
 
-        renderEpics();
+             getEpics(domData);
 
-        for (var epickey in epicsModel.getAll()) {
-            renderItemStatus(epickey);
-        }
+             renderEpics();
 
-        setTimeout(renderStatuses, 2000);
+             for (var epickey in epicsModel.getAll()) {
+                 renderItemStatus(epickey);
+             }
+
+             setTimeout(renderStatuses, 2000);
+         }
 
         gadgets.window.adjustHeight();
     }
