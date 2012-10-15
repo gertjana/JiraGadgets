@@ -7,6 +7,9 @@ circle.node {
     stroke: #3182bd;
     stroke-width: 1.5px;
 }
+circle.node:hover {
+    stroke: red !important;
+}
 
 line.link {
     fill: none;

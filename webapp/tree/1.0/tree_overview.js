@@ -35,6 +35,7 @@
 
     var baseSearchRequest = "http://" + this.location.host + "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=";
     var baseIssueRequest  = "http://" + this.location.host + "/jira/secure/IssueNavigator.jspa?reset=true&jqlQuery=";
+    var singleIssueRequest = "http://" + this.location.host + "/jira/browse/{0}";
 
     var JqlQuery = {
         StoriesForAProject                : "Project%3D%22{0}%22+AND+(issueType%3DStory+OR+issueType%3DEpic)+AND+Status!%3DClosed",
@@ -83,11 +84,17 @@
             var params = {};
             params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.DOM;
 
+            log(url);
             gadgets.io.makeRequest(url, handleResponse, params);
         }
     }
 
     function handleResponse(obj) {
+        if (obj.rc > 399) {
+            document.getElementById('content_div').innerHTML = obj.text;
+            return;
+        }
+
         var domData = obj.data;
         var items = [];
 
@@ -203,7 +210,7 @@
                     var link = item.links[i];
                     var linkId;
                     if (isInArray(link.link, data.nodes)==-1) {
-                        data.nodes.push({"name":link.link, "color":TypeColors.Link, "size":"10", "title":"{0} {1} {2}".format(link.link, link.cause, item.key)});
+                        data.nodes.push({"name":link.link, "color":TypeColors.Link, "size":"10", "title":"{2} {1} {0}".format(link.link, link.cause, item.key)});
                         linkId = data.nodes.length-1;
                     } else {
                         linkId = isInArray(link.link, data.nodes);
@@ -223,7 +230,7 @@
                 if(isNaN(d.value)) {return 20;}
                 return 20*parseFloat(d.value);
             })
-            .charge(-80)
+            .charge(showSubTasks ? -80 : -120)
             .start();
 
         var node = vis.selectAll("circle.node")
@@ -258,7 +265,12 @@
             .attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; })
+            .attr("y2", function(d) { return d.target.y; });
+
+
+        node.on("click", function(e) {
+            window.open(singleIssueRequest.format(e.name), "_blank");
+        });
 
         force.on("tick", function(e) {
             link.attr("x1", function(d) { return d.source.x; })
@@ -272,9 +284,10 @@
             title.text(function(d) {return d.title;})
 
             text.attr("dx",function(d) {return d.x;})
-                .attr("dy", function(d) {return d.y + 20;})
-
+                .attr("dy", function(d) {return d.y + 20;});
         });
+
+
         msg.dismissMessage(loadMessage);
     }
 
