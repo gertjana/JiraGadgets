@@ -1,0 +1,155 @@
+#content_div {
+ font-size: 80%;
+ background-color: #FFF;
+}
+ 
+.title {
+ background-color: #95b7dd;
+ font-weight: bold;
+ margin: 0;
+ padding: 10px;
+}
+ 
+.jira-container {
+    background-color: #eff2ff;
+    height:20px;
+    width:100%;
+    clear:left;
+}
+
+.jira-item {
+    background-image: url('../../images/ico_epic.png');
+    background-repeat: no-repeat;
+    background-position:0px 2px;
+    margin-left: 3px;
+    float:left;
+    height:20px;
+    padding-left: 20px;
+}
+
+.jira-container .footer {
+    margin-left: 3px;
+    float:left;
+    height:20px;
+    padding-left: 20px;
+}
+
+.jira-status {
+    margin-bottom: 0px;
+    float:left;
+    font-size:x-small;
+    color:#222;
+}
+.jira-container .jira-status .alert {
+    background-image: url('../../images/alert.png');
+    background-repeat: no-repeat;
+    background-position: 9px 0px;
+}
+
+.jira-container .stories {
+    clear:left;
+    float:left;
+    display: none;
+}
+
+.jira-container .story {
+    background-image: url('../../images/ico_story.png');
+    background-repeat: no-repeat;
+    background-position:12px 2px;
+    float:left;
+    width:100%;
+    padding-top: 2px;
+    padding-right: 0px;
+    padding-left: 30px;
+    padding-bottom: 2px;
+    background-color : #e5ffdf;
+}
+
+.jira-container .striked {
+    text-decoration: line-through;
+    background-color: #f0f4ff !important;
+    color:#999;
+}
+
+.jira-container .alert {
+    background-image: url('../../images/alert.png');
+    background-repeat: no-repeat;
+    background-position: 14px 3px;
+}
+
+.jira-container .toggle {
+    background-image: url('../../images/arrow_down.png');
+    background-repeat: no-repeat;
+    background-position : 3px 5px;
+    width:15px;
+    height : 15px;
+    float:left;
+}
+
+.jira-container img {
+    margin-top:2px;
+}
+
+.bold {
+    font-weight: bold;
+}
+.jira-item a, .story a {
+ color: #0060BF;
+ text-decoration: none;
+}
+.striked a {
+    color:#ccc;
+}
+
+
+.jira-item-date {
+ color: #909090;
+ font-size: x-small;
+ text-align: right;
+}
+ 
+.jira-item-desc {
+ color: #535353;
+ font-size: small;
+ padding: 0.5em;
+}
+
+.footer {
+    width:100%;
+    height:15px;
+    float:left;
+}
+
+.colorbox {
+    height:15px;
+    width:30px;
+    border:1px solid #444;
+    float:left;
+    text-align: center;
+    font-size: xx-small;
+}
+
+.grey {
+    color:#EEE;
+}
+
+.indent1 {
+    background-color : #EEEEEE;
+    padding-left: 10px;
+}
+.indent2 {
+    background-color : #EEEEEE;
+    padding-left: 20px;
+}
+.indent3 {
+    background-color : #EEEEEE;
+    padding-left: 30px;
+}
+.indent4 {
+    background-color : #EEEEEE;
+    padding-left: 40px;
+ }
+.indent5 {
+    background-color : #EEEEEE;
+    padding-left: 50px;
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+    <ModulePrefs title="Epic Overview 4.0" author="SDL WCMS" author_email="gassies@sdl.com" directory_title="Epic Overview 4.0" description="Overview and progress on Epics"
+                 thumbnail="http://gadgets.major7.cloudbees.net/eo/thumbnail.png" screenshot="http://gadgets.major7.cloudbees.net/eo/screenshot.png">
+        <Optional feature="gadget-directory">
+            <Param name="categories">SDL CMT</Param>
+        </Optional>
+        <Require feature="minimessage" />
+        <Require feature="dynamic-height" />
+        <Require feature="views"/>
+        <Require feature="settitle"/>
+    </ModulePrefs>
+    <UserPref name="project" display_name="Project Key" required="true" />
+    <UserPref name="version" display_name="Version (Optional)"/>
+    <UserPref name="useLinks" display_name="Use Links (Instead of Epic/Theme Field)" datatype="bool" default_value="false" />
+    <Content type="html">
+        <![CDATA[
+            <link rel="stylesheet" href="http://gadgets.major7.cloudbees.net/eo/4.0/epic_overview.css">
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jquery-1.7.2.js"></script>
+            <div id="content_div"></div>
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/eo/4.0/epic_overview.js"></script>
+        ]]>
+    </Content>
+</Module>
