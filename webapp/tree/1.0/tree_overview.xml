@@ -16,6 +16,7 @@
     </Locale>
     <UserPref name="project" display_name="Project Key" required="true" />
     <UserPref name="version" display_name="Version (Optional)"/>
+    <UserPref name="showClosed" display_name="Show Closed Stories/Epics?" datatype="bool" default_value="false" />
     <UserPref name="showSubTasks" display_name="Show Subtasks?" datatype="bool" default_value="true" />
     <Content type="html" view="profile,canvas,home">
         <![CDATA[
@@ -30,6 +31,7 @@
                         <td style="background-color:#2ca02c;color:black;">Story</td>
                         <td style="background-color:#c49c94;color:black;">Subtask</td>
                         <td style="background-color:#ff7f0e;color:black;">Linked Issue</td>
+                        <td style="background-color:#CCCCCC;color:black;">Closed</td>
                     </tr>
                 </table>
             </div>

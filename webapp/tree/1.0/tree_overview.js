@@ -32,15 +32,18 @@
     var project = prefs.getString("project");
     var version = prefs.getString("version");
     var showSubTasks = prefs.getBool("showSubTasks");
+    var showClosed = prefs.getBool("showClosed");
 
     var baseSearchRequest = "http://" + this.location.host + "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?jqlQuery=";
     var baseIssueRequest  = "http://" + this.location.host + "/jira/secure/IssueNavigator.jspa?reset=true&jqlQuery=";
     var singleIssueRequest = "http://" + this.location.host + "/jira/browse/{0}";
 
     var JqlQuery = {
-        StoriesForAProject                : "Project%3D%22{0}%22+AND+(issueType%3DStory+OR+issueType%3DEpic)+AND+Status!%3DClosed",
-        StoriesForAProjectAndVersion      : "Project%3D%22{0}%22+AND+(issueType%3DStory+OR+issueType%3DEpic)+AND+Status!%3DClosed+AND+fixVersion%3D%22{1}%22",
-        SingleIssue                       : "key%3D%22{0}%22"
+        OpenStoriesForAProject                : "Project%3D%22{0}%22+AND+(issueType%3DStory+OR+issueType%3DEpic)+AND+Status!%3DClosed",
+        OpenStoriesForAProjectAndVersion      : "Project%3D%22{0}%22+AND+(issueType%3DStory+OR+issueType%3DEpic)+AND+Status!%3DClosed+AND+fixVersion%3D%22{1}%22",
+        StoriesForAProject                    : "Project%3D%22{0}%22+AND+(issueType%3DStory+OR+issueType%3DEpic)",
+        StoriesForAProjectAndVersion          : "Project%3D%22{0}%22+AND+(issueType%3DStory+OR+issueType%3DEpic)+AND+fixVersion%3D%22{1}%22",
+        SingleIssue                           : "key%3D%22{0}%22"
     };
 
     var data = {
@@ -52,7 +55,8 @@
         Story : "#2ca02c",
         Epic : "#1f77b4",
         SubTask : "#c49c94",
-        Link : "#ff7f0e"
+        Link : "#ff7f0e",
+        Closed : "#CCCCCC"
     }
 
     var nodesToUpdate = [];
@@ -76,9 +80,20 @@
             gadgets.window.adjustHeight();
         }  else {
             gadgets.window.setTitle("Hierarchical View - Project: {0} Version: {1}".format(project, version));
-            var jqlQuery = JqlQuery.StoriesForAProject.format(encodeURIComponent(project));
+
+            var jqlQuery;
             if (version) {
-                jqlQuery = JqlQuery.StoriesForAProjectAndVersion.format(encodeURIComponent(project), encodeURIComponent(version));
+                if (showClosed) {
+                    jqlQuery = JqlQuery.StoriesForAProjectAndVersion.format(encodeURIComponent(project), encodeURIComponent(version));
+                } else {
+                    jqlQuery = JqlQuery.OpenStoriesForAProjectAndVersion.format(encodeURIComponent(project), encodeURIComponent(version));
+                }
+            } else {
+                if (showClosed) {
+                    jqlQuery = JqlQuery.StoriesForAProject.format(encodeURIComponent(project));
+                } else {
+                    jqlQuery = JqlQuery.OpenStoriesForAProject.format(encodeURIComponent(project));
+                }
             }
             var url = baseSearchRequest + jqlQuery;
             var params = {};
@@ -118,6 +133,9 @@
                         break;
                     case "type":
                         item.type = childNode.firstChild.nodeValue;
+                        break;
+                    case "status":
+                        item.status = childNode.firstChild.nodeValue;
                         break;
                     case "customfields":
                         var customFieldNodes = childNode.childNodes;
@@ -172,12 +190,12 @@
             var size = ""+getSize(item.storypoints);
 
             if (item.type=="Epic") {
-                var epic = {"name": item.key, "color": TypeColors.Epic, "size":"10", "title":item.name};
+                var epic = {"name": item.key, "color": TypeColors.Epic, "size":"10", "title":item.name, "status":item.status};
                 if (isInArray(epic.name, data.nodes)==-1) {
                     data.nodes.push(epic);
                 }
             }  else {
-                data.nodes.push({"name": item.key, "color": TypeColors.Story, "size":size, "title":item.name});
+                data.nodes.push({"name": item.key, "color": TypeColors.Story, "size":size, "title":item.name, "status":item.status});
             }
 
             var itemId = data.nodes.length-1;
@@ -186,7 +204,7 @@
                     var epic = item.epic[m];
                     var epicId;
                     if (isInArray(epic, data.nodes)==-1) {
-                        var epicNode = {name: epic, color: TypeColors.Epic, "size":"10", "title":item.epic };
+                        var epicNode = {name: epic, color: TypeColors.Epic, "size":"10", "title":item.epic, "status":"None" };
                         data.nodes.push(epicNode);
                         epicId = data.nodes.length-1;
                         nodesToUpdate.push(epicNode);
@@ -198,11 +216,13 @@
             }
             if (item.subtasks) {
                 for(i=0;i<item.subtasks.length;i++) {
-                    var subTaskNode = {"name": item.subtasks[i], "color":TypeColors.SubTask, "size": "10", "title":item.subtasks[i]};
-                    data.nodes.push(subTaskNode);
-                    var subTaskNodeId = data.nodes.length-1;
-                    data.links.push({"source":itemId, "target":subTaskNodeId, "value":"1"});
-                    nodesToUpdate.push(subTaskNode);
+                    if (item.status!="Closed"){
+                        var subTaskNode = {"name": item.subtasks[i], "color":TypeColors.SubTask, "size": "10", "title":item.subtasks[i], "status":"None"};
+                        data.nodes.push(subTaskNode);
+                        var subTaskNodeId = data.nodes.length-1;
+                        data.links.push({"source":itemId, "target":subTaskNodeId, "value":"1"});
+                        nodesToUpdate.push(subTaskNode)
+                    };
                 }
             }
             if (item.links) {
@@ -240,13 +260,15 @@
             .attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; })
             .attr("r", function(d) {return d.size;})
-            .style("fill", function(d, i) { return d.color; })
+            .style("fill", function(d, i) {
+                return d.color;
+            })
             .style("stroke", function(d, i) { return d3.rgb(d.color).darker(2); })
             .style("stroke-width", 1.5)
             .call(force.drag);
 
         var title = node.append("title")
-            .text(function(d) {return d.title;});
+            .text(function(d) {return d.title;})
 
         var text = vis.selectAll("circle.text")
             .data(data.nodes)
@@ -256,7 +278,10 @@
             .attr("text-anchor", "middle")
             .style("font-size", ".5em")
             .style("font-weight", "bold")
-            .text(function(d) {return d.name;});
+            .text(function(d) {return d.name;})
+            .style("text-decoration", function (d) {
+                return d.status == "Closed" ? "line-through" : "none";
+            });
 
         var link = vis.selectAll("line.link")
             .data(data.links)
@@ -279,13 +304,19 @@
                 .attr("y2", function(d) { return d.target.y; }) ;
 
             node.attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
-
-            title.text(function(d) {return d.title;})
+                .attr("cy", function(d) { return d.y; })
+                .style("fill", function(d) {
+                    if (d.status && d.status=="Closed") {return TypeColors.Closed;}
+                    return d.color;
+                });
+            title.text(function(d) {return d.title;});
 
             text.attr("dx",function(d) {return d.x;})
-                .attr("dy", function(d) {return d.y + 20;});
-        });
+                .attr("dy", function(d) {return d.y + 20;})
+                .style("text-decoration", function (d) {
+                    return d.status == "Closed" ? "line-through" : "none";
+                });
+            });
 
 
         msg.dismissMessage(loadMessage);
@@ -316,6 +347,9 @@
                             case "title":
                                 item.title = childNode.firstChild.nodeValue;
                                 break;
+                            case "status":
+                                item.status = childNode.firstChild.nodeValue;
+                                break;
                             case "customfields":
                                 var customFieldNodes = childNode.childNodes;
                                 for (var k=0; k < customFieldNodes.length;k++) {
@@ -332,11 +366,13 @@
                 }
                 var i= isInArray(epic.name, data.nodes);
                 epic.title = item.title;
-
+                if (item.status=="Closed") {
+                    epic.color = TypeColors.Closed;
+                }
                 if (item.epic) {
                     var epicId;
                     if (isInArray(item.epic, data.nodes)==-1) {
-                        var epicNode = {name: item.epic, color: TypeColors.Epic, "size":"10", "title":item.epic};
+                        var epicNode = {name: item.epic, color: TypeColors.Epic, "size":"10", "title":item.epic, "status":"None"};
                         data.nodes.push(epicNode);
                         epicId = data.nodes.length-1;
                         nodesToUpdate.push(epicNode);
@@ -346,7 +382,9 @@
                     data.links.push({"source":i, "target":epicId, "value":"3"});
                     log("Adding Parent Epic: {0}".format(item.epic));
                 }
+
                 data.nodes[i] = epic;
+
                 force.start();
             }, params);
         });
