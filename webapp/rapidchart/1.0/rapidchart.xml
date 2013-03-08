@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+    <ModulePrefs title="Rapid Chart 1.0" author="Gertjan Assies" author_email="gertjan.assies@gmail.com" directory_title="Rapid Chart 1.0" description="Shows burndown for a rapid board/sprint">
+        <Optional feature="gadget-directory">
+            <Param name="categories">SDL CMT</Param>
+        </Optional>
+        <Require feature="minimessage" />
+        <Require feature="dynamic-height" />
+        <Require feature="views"/>
+        <Require feature="settitle"/>
+    </ModulePrefs>
+    <UserPref name="board" display_name="Rapid Board" required="true" />
+    <UserPref name="sprint" display_name="Sprint" required="true"/>
+    <UserPref name="scale" display_name="scale" default_value="1" required="true"/>
+    <UserPref name="timeout" display_name="chart load timeout(ms)" default_value="3000" required="true"/>
+    <Content type="html" view="profile,canvas,home">
+        <![CDATA[
+            <link rel="stylesheet" href="http://gadgets.major7.cloudbees.net/rapidchart/1.0/rapidchart.css">
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jquery-1.7.2.js"></script>
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jquery.freetile.js"></script>
+            <div id="content_div"><iframe id="chart" scrolling="no"></iframe></div>
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/rapidchart/1.0/rapidchart.js"></script>
+        ]]>
+    </Content>
+</Module>

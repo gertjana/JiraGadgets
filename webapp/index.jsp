@@ -62,7 +62,7 @@
 	<h2 class="title">This application is still under development</h2>
 	<div id="content">	
 		<h3>Your Servlet/JSP application is running</h3>
-		<p><a href="/hello">Click here to see a Servlet</a></p>
+		<p><a href="/graphtest.jsp">Graph Test</a></p>
 	</div>
 </body>
 </html>

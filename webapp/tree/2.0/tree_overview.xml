@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+    <ModulePrefs title="Hierarchical Overview 2.0" author="Gertjan Assies" author_email="gertjan.assies@gmail.com" directory_title="Hierarchical Overview 2.0" description="Hierarchical view of Epics, Stories, SubTasks and links">
+        <Optional feature="gadget-directory">
+            <Param name="categories">SDL CMT</Param>
+        </Optional>
+        <Require feature="minimessage" />
+        <Require feature="dynamic-height" />
+        <Require feature="views"/>
+        <Require feature="settitle"/>
+    </ModulePrefs>
+    <Locale>
+        <messagebundle>
+            <msg name="field.required">Required</msg>
+        </messagebundle>
+    </Locale>
+    <UserPref name="project" display_name="Project Key" required="true" />
+    <UserPref name="version" display_name="Version (Optional)"/>
+    <UserPref name="showClosed" display_name="Show Closed Stories/Epics?" datatype="bool" default_value="false" />
+    <UserPref name="showSubTasks" display_name="Show Subtasks?" datatype="bool" default_value="true" />
+    <UserPref name="useLinks" display_name="Use Links (Instead of Epic/Theme Field)" datatype="bool" default_value="false" />
+
+    <Content type="html" view="profile,canvas,home">
+        <![CDATA[
+            <link rel="stylesheet" href="http://gadgets.major7.cloudbees.net/tree/2.0/tree_overview.css">
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/js/jquery-1.7.2.js"></script>
+            <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+            <div id="header">
+                <table>
+                    <tr>
+                        <td>Legend: </td>
+                        <td style="background-color:#1f77b4;color:black;">Epic</td>
+                        <td style="background-color:#2ca02c;color:black;">Story</td>
+                        <td style="background-color:#c49c94;color:black;">Subtask</td>
+                        <td style="background-color:#ff7f0e;color:black;">Linked Issue</td>
+                        <td style="background-color:#CCCCCC;color:black;">Closed</td>
+                    </tr>
+                </table>
+            </div>
+            <div id="content_div"></div>
+            <script type="text/javascript" src="http://gadgets.major7.cloudbees.net/tree/2.0/tree_overview.js"></script>
+        ]]>
+    </Content>
+</Module>

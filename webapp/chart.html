@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>
+    <title>Wallboard</title>
+    <style type="text/css">
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        iframe { border: none; }
+    </style>
+    <script type="text/javascript">
+        var Dash = {
+            nextIndex: 0,
+            currentActiveIframeIndex: 0,
+
+            iframes: ['displayArea1', 'displayArea2'],
+
+            dashboards: [
+                {url: "http://path.to.jira/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=cumulativeFlowDiagram&swimlane=4&column=10&column=11&column=12&quickFilter=23&from=2013-01-08&to=2013-01-24", time: 10},
+                {url: "http://path.to.jira/secure/RapidBoard.jspa?rapidView=4", time: 10},
+                {url: "http://path.to.jira/secure/RapidBoard.jspa?rapidView=4&view=reporting&chart=burndownChart&sprint=2", time: 10}
+            ],
+
+            setup: function() {
+                // Preload next page, as it takes time to load the dynamic data
+                Dash.preloadNextPage();
+                setTimeout(Dash.display, 2001);
+            },
+
+            display: function()
+            {
+                var preloadIframeIndex = Dash.currentActiveIframeIndex ? 0 : 1;
+                var dashboard = Dash.dashboards[Dash.nextIndex];
+
+                // swap iframe visibility
+                $('#'+Dash.iframes[Dash.currentActiveIframeIndex]).fadeOut(800, function (){
+                    $('#'+Dash.iframes[preloadIframeIndex]).fadeIn(800);
+                });
+
+                // swap current active iframe
+                Dash.currentActiveIframeIndex = preloadIframeIndex;
+
+                // Delay for the specified amount of time before swapping to a different dashbaord display
+                setTimeout(Dash.display, dashboard.time * 1000);
+
+                // Preload next page, as it takes time to load the dynamic data
+                setTimeout(Dash.preloadNextPage, 2000);
+
+            },
+
+            preloadNextPage: function()
+            {
+                var preloadIframeIndex = Dash.currentActiveIframeIndex ? 0 : 1;
+                var iframeToPreload = frames[Dash.iframes[preloadIframeIndex]];
+                var dashboard = Dash.dashboards[Dash.nextIndex];
+
+                // Start page load on hidden iframe
+                $('#'+Dash.iframes[preloadIframeIndex]).attr("src", dashboard.url)
+                // Cycle to next entry in dashboards array
+                Dash.nextIndex = (Dash.nextIndex + 1) % Dash.dashboards.length;
+                // Delay to allow the page to load, then strip out unnecessary menus, etc
+                setTimeout(Dash.removeExcess, 2000);
+            },
+
+            removeExcess: function()
+            {
+                var preloadIframeIndex = Dash.currentActiveIframeIndex ? 0 : 1;
+                var iframeToPreload = frames[Dash.iframes[preloadIframeIndex]];
+
+                // Remove any excess information from the page
+                $('#header', iframeToPreload.document).hide();
+                $('.ghx-feedback', iframeToPreload.document).hide();
+                $('.aui-dd-link', iframeToPreload.document).hide();
+                $('#announcement-banner', iframeToPreload.document).hide();
+                $('#ghx-operations', iframeToPreload.document).hide();
+                $('#ghx-chart-data', iframeToPreload.document).hide();
+                $('#ghx-chart-overview-group', iframeToPreload.document).hide();
+            }
+        };
+
+        window.onload = Dash.setup;
+    </script>
+</head>
+<body>
+<iframe id="displayArea1" width="100%" height="100%"></iframe>
+<iframe id="displayArea2" width="100%" height="100%"></iframe>
+</body>
+</html>

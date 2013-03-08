@@ -6,11 +6,11 @@
   <display-name>Simple</display-name>
   
   <servlet>
-    <servlet-name>HelloServlet</servlet-name>  
-    <servlet-class>example.HelloServlet</servlet-class>  
+    <servlet-name>GraphServlet</servlet-name>
+    <servlet-class>net.addictivesoftware.gadgets.GraphServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>HelloServlet</servlet-name>
-    <url-pattern>/hello</url-pattern>
+    <servlet-name>GraphServlet</servlet-name>
+    <url-pattern>/graph</url-pattern>
   </servlet-mapping>
 </web-app>
